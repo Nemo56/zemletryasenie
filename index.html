@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="author" content="Комарь Евгений">
+<title>Землетрясение — тренажёр. Автор: Комарь Евгений</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=PT+Sans+Narrow:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --paper: #EEF3F1; --sheet: #F7FAF8; --grid: #D3E1E5; --gridMajor: #B3CAD3;
+  --ink: #1C2B46; --inkSoft: #5A6B82; --tension: #1F63D6; --compress: #D23A2A;
+  --wood: #B9864A; --steel: #6F7E92; --road: #3B4049; --rope: #7B5E3C; --stone: #978E80;
+  --water: #A9CFE8; --ground: #1C2B46; --danger: #D23A2A; --ok: #2E8B57; --star: #E5A31A;
+  --btn: #FFFFFF; --btnLine: #9FB3C2; --floor: #4A4F59; --brace: #2F7A57; --cable: #7B5E3C; --soil: #B8A98E;
+  color-scheme: light;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0E1E2D; --sheet: #112437; --grid: #1A344B; --gridMajor: #24486A;
+    --ink: #DCE8F2; --inkSoft: #8FA6BD; --tension: #5B9BFF; --compress: #FF6B57;
+    --wood: #D7A66C; --steel: #A4B3C4; --road: #B8BFC8; --rope: #C79A64; --stone: #B9AF9F;
+    --water: #1F4B6E; --ground: #8FA6BD; --danger: #FF6B57; --ok: #4CC38A; --star: #F2B738;
+    --btn: #15293D; --btnLine: #33536F; --floor: #AEB6C1; --brace: #5FC08F; --cable: #C79A64; --soil: #5B4F3E;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0E1E2D; --sheet: #112437; --grid: #1A344B; --gridMajor: #24486A;
+  --ink: #DCE8F2; --inkSoft: #8FA6BD; --tension: #5B9BFF; --compress: #FF6B57;
+  --wood: #D7A66C; --steel: #A4B3C4; --road: #B8BFC8; --rope: #C79A64; --stone: #B9AF9F;
+  --water: #1F4B6E; --ground: #8FA6BD; --danger: #FF6B57; --ok: #4CC38A; --star: #F2B738;
+  --btn: #15293D; --btnLine: #33536F; --floor: #AEB6C1; --brace: #5FC08F; --cable: #C79A64; --soil: #5B4F3E;
+  color-scheme: dark;
+}
+*, *::before, *::after { box-sizing: inherit; }
+html { scroll-padding-top: env(safe-area-inset-top, 0px); height: 100%; }
+body {
+  margin: 0; height: 100%; background: var(--paper); color: var(--ink);
+  font-family: 'PT Sans Narrow', 'Arial Narrow', 'Roboto Condensed', sans-serif;
+  font-size: 18px; line-height: 1.35;
+}
+#app { height: 100%; display: grid; grid-template-rows: auto 1fr; }
+header {
+  display: flex; align-items: center; gap: 14px; padding: 10px 16px 8px;
+  border-bottom: 2px solid var(--ink);
+}
+header h1 { font-size: 26px; margin: 0; font-weight: 700; letter-spacing: 0.01em; }
+header .task { margin: 0; color: var(--inkSoft); max-width: 70ch; font-size: 17px; }
+header .titles { flex: 1; min-width: 0; }
+.hstars { font-size: 22px; color: var(--star); white-space: nowrap; }
+.hstars .off { color: var(--gridMajor); }
+main { display: grid; grid-template-columns: 1fr 270px; min-height: 0; }
+#stage { position: relative; min-height: 0; }
+#cv { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; cursor: crosshair; display: block; }
+aside {
+  border-left: 2px solid var(--ink); padding: 12px 14px; overflow-y: auto;
+  display: flex; flex-direction: column; gap: 12px; background: var(--sheet);
+}
+aside h2 { font-size: 17px; margin: 0 0 6px; color: var(--inkSoft); font-weight: 400; }
+button {
+  font: inherit; color: var(--ink); background: var(--btn); border: 1.5px solid var(--btnLine);
+  border-radius: 6px; padding: 8px 10px; cursor: pointer; min-height: 44px;
+}
+button:hover { border-color: var(--ink); }
+button:focus-visible, input:focus-visible { outline: 3px solid var(--tension); outline-offset: 2px; }
+button[aria-pressed="true"] { border: 2px solid var(--ink); box-shadow: inset 0 0 0 2px var(--sheet), inset 0 0 0 4px var(--ink); }
+.mats { display: grid; gap: 6px; }
+.mat { display: grid; grid-template-columns: 34px 1fr auto; align-items: center; gap: 8px; text-align: left; }
+.mat .sw { height: 10px; border-radius: 2px; }
+.mat .price { color: var(--inkSoft); font-size: 15px; white-space: nowrap; }
+.tools { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.tools button, .speed button { white-space: nowrap; padding: 8px 4px; }
+.rule { margin: 0; font-size: 15px; color: var(--inkSoft); }
+.primary {
+  background: var(--ink); color: var(--sheet); border-color: var(--ink); font-weight: 700; font-size: 21px; padding: 12px;
+}
+.primary:hover { filter: brightness(1.15); }
+.speed { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.legend { display: grid; gap: 6px; font-size: 16px; }
+.legend div { display: flex; align-items: center; gap: 8px; }
+.legend i { display: inline-block; width: 34px; height: 9px; border-radius: 2px; flex: none; }
+.qinfo { border: 2px solid var(--ink); border-radius: 6px; padding: 6px 10px; font-size: 16px; margin-bottom: 8px; }
+.qinfo b { font-size: 19px; }
+.isos { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.isos button { font-size: 16px; padding: 6px 4px; }
+#balls { grid-template-columns: repeat(5, 1fr); }
+#balls button { padding: 6px 2px; }
+.legend .bendchip { background: var(--wood); height: 12px; border-top: 3px solid var(--compress); border-bottom: 3px solid var(--tension); }
+.readout { font-size: 17px; margin: 0; }
+.readout b { font-size: 20px; }
+input[type=range] { width: 100%; accent-color: var(--ink); }
+.stamp {
+  position: absolute; right: 18px; top: 18px; background: var(--sheet); border: 2px solid var(--ink);
+  font-size: 15px; pointer-events: none; min-width: 270px;
+}
+.stamp table { border-collapse: collapse; width: 100%; }
+.stamp td { border: 1px solid var(--ink); padding: 2px 8px; white-space: nowrap; }
+.stamp td:first-child { color: var(--inkSoft); width: 42%; }
+.stamp .over { color: var(--danger); font-weight: 700; }
+.toast {
+  position: absolute; left: 50%; top: 16px; transform: translateX(-50%); background: var(--ink); color: var(--sheet);
+  padding: 6px 14px; border-radius: 6px; font-size: 17px; opacity: 0; transition: opacity .2s; pointer-events: none;
+}
+.toast.show { opacity: 1; }
+dialog {
+  border: 2px solid var(--ink); background: var(--sheet); color: var(--ink); border-radius: 8px;
+  max-width: min(560px, 92vw); padding: 22px 24px;
+}
+dialog::backdrop { background: rgba(14, 30, 45, 0.45); }
+dialog h2 { margin: 0 0 8px; font-size: 30px; }
+dialog p { margin: 0 0 12px; max-width: 60ch; }
+dialog .ill { display: block; margin: 6px auto 14px; max-width: 100%; height: auto; color: var(--ink); }
+dialog .tip { color: var(--inkSoft); border-left: 3px solid var(--gridMajor); padding-left: 10px; }
+.dlgbtns { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; margin-top: 8px; }
+.bigstars { font-size: 48px; text-align: center; color: var(--star); letter-spacing: 6px; margin: 4px 0 10px; }
+.bigstars .off { color: var(--gridMajor); }
+.starlist { list-style: none; padding: 0; margin: 0 0 12px; }
+.starlist li { padding: 3px 0; }
+.life { border-top: 2px solid var(--ink); margin: 6px 0 10px; padding-top: 10px; }
+.life h3 { margin: 0 0 4px; font-size: 21px; }
+.life .ill { margin: 4px auto 8px; max-height: 120px; }
+.mat.lo { grid-template-columns: 1fr auto; }
+dialog { max-height: 92vh; overflow-y: auto; }
+.lvls { display: grid; gap: 8px; margin: 8px 0 4px; }
+.lvls button { display: flex; justify-content: space-between; text-align: left; gap: 12px; font-size: 19px; }
+.lvls .s { color: var(--star); }
+.lvls .s .off { color: var(--gridMajor); }
+.author { font-size: 15px; color: var(--inkSoft); white-space: nowrap; }
+.author b { color: var(--ink); }
+.dlgauthor { margin-top: 14px; padding-top: 8px; border-top: 1px solid var(--gridMajor); font-size: 14px; color: var(--inkSoft); text-align: right; }
+[hidden] { display: none !important; }
+@media (max-width: 820px) {
+  main { grid-template-columns: 1fr; grid-template-rows: minmax(300px, 58vh) auto; }
+  aside { border-left: none; border-top: 2px solid var(--ink); }
+  .mats { grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); }
+  .stamp { right: 8px; top: 8px; min-width: 0; font-size: 13px; }
+  .stamp tr:first-child { display: none; }
+  .author { order: 2; margin-left: auto; font-size: 13px; }
+  .stamp td { padding: 1px 5px; }
+  header { flex-wrap: wrap; }
+  header .titles { order: 3; flex-basis: 100%; }
+  header .hstars { margin-left: auto; }
+  header h1 { font-size: 21px; }
+  header .task { font-size: 15px; }
+}
+@media (prefers-reduced-motion: reduce) { .toast { transition: none; } }
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <button id="lvlBtn" aria-label="Список уровней">☰ Уровни</button>
+    <div class="titles">
+      <h1 id="title"></h1>
+      <p class="task" id="task"></p>
+    </div>
+    <div class="hstars" id="hstars" aria-label="Звёзды за уровень"></div>
+    <div class="author">Автор: <b>Комарь Евгений</b></div>
+  </header>
+  <main>
+    <div id="stage">
+      <canvas id="cv" aria-label="Чертёж каркаса дома. Нажимай на точки сетки, чтобы ставить колонны и связи."></canvas>
+      <div class="stamp"><table><tbody>
+        <tr><td>Объект</td><td id="stObj"></td></tr>
+        <tr><td>Потрачено</td><td id="stCost"></td></tr>
+        <tr><td>Раскачка</td><td id="stDefl">—</td></tr>
+        <tr><td>Испытание</td><td id="stRes">не проводилось</td></tr>
+        <tr><td>Разраб.</td><td>Комарь Е.</td></tr>
+      </tbody></table></div>
+      <div class="toast" id="toast" role="status"></div>
+    </div>
+    <aside>
+      <section id="buildPanel">
+        <div id="quakeInfo" class="qinfo"></div>
+        <div id="quakeCtl" hidden>
+          <h2>Сила землетрясения</h2>
+          <div class="speed" id="balls"></div>
+          <h2 style="margin-top:8px">Частота толчков: <b id="fVal"></b></h2>
+          <input type="range" id="fq" min="0.4" max="3" step="0.05" value="2" aria-label="Частота толчков">
+        </div>
+        <div id="matBox"><h2>Материал</h2><div class="mats" id="mats"></div></div>
+        <h2 style="margin-top:10px">Инструмент</h2>
+        <div class="tools" id="toolBox">
+          <button id="toolBuild" aria-pressed="true">✎ Строить</button>
+          <button id="toolDel" aria-pressed="false">⌫ Удалить</button>
+          <button id="toolRigid" aria-pressed="false" hidden>■ Жёсткий узел</button>
+          <button id="toolTmd" aria-pressed="false" hidden>◉ Маятник</button>
+          <button id="undoBtn">↶ Отменить</button>
+          <button id="clearBtn">✕ Очистить</button>
+        </div>
+        <div id="tmdBox" hidden>
+          <h2 style="margin-top:8px">Длина подвеса маятника: <b id="tmdVal"></b></h2>
+          <input type="range" id="tmdL" min="0.2" max="2.5" step="0.05" value="1.5" aria-label="Длина подвеса маятника">
+          <p class="rule" id="tmdPer"></p>
+        </div>
+        <div id="isoBox" hidden>
+          <h2 style="margin-top:8px">Резиновые опоры</h2>
+          <div class="isos" id="isos"></div>
+        </div>
+        <p class="rule" id="rule" style="margin-top:10px"></p>
+        <button id="pushBtn" style="width:100%;margin-top:8px">↔ Толкнуть дом (узнать его такт)</button>
+        <p class="readout" id="periodOut" style="margin-top:6px"></p>
+        <button id="testBtn" class="primary" style="width:100%;margin-top:8px">▶ Землетрясение!</button>
+        <button id="helpBtn" style="width:100%;margin-top:8px">? Задание уровня</button>
+      </section>
+      <section id="testPanel" hidden>
+        <h2>Скорость</h2>
+        <div class="speed">
+          <button data-speed="0" aria-pressed="false">Пауза</button>
+          <button data-speed="0.25" aria-pressed="false">Медленно</button>
+          <button data-speed="1" aria-pressed="true">Обычно</button>
+        </div>
+        <h2 style="margin-top:12px">Увеличить движения: <b id="exagVal">×1</b></h2>
+        <input type="range" id="exag" min="1" max="50" step="1" value="20" aria-label="Во сколько раз увеличить движения на экране">
+        <p class="rule">Настоящие колебания — сантиметры. Чтобы их увидеть, движения на экране увеличены. Пунктир — дом до толчков.</p>
+        <h2 style="margin-top:12px">Цвета</h2>
+        <div class="legend">
+          <div><i style="background:var(--tension)"></i>растяжение</div>
+          <div><i style="background:var(--compress)"></i>сжатие</div>
+          <div><i class="bendchip"></i>изгиб</div>
+          <div>чем ярче, тем ближе к поломке; мигает — почти сломалось</div>
+        </div>
+        <p class="readout" style="margin-top:12px">Раскачка крыши: <b id="driftVal">0 %</b></p>
+        <p class="readout">Самая нагруженная деталь: <b id="loadVal">0 %</b></p>
+        <button id="backBtn" class="primary" style="width:100%;margin-top:12px">■ Вернуться к стройке</button>
+      </section>
+    </aside>
+  </main>
+</div>
+
+<dialog id="introDlg">
+  <h2 id="inTitle"></h2>
+  <div id="inIll"></div>
+  <p id="inIdea"></p>
+  <p id="inTask"></p>
+  <p class="tip" id="inTip"></p>
+  <div class="dlgbtns"><button class="primary" id="inGo">Начать</button></div>
+  <div class="dlgauthor">Тренажёр «Землетрясение». Автор: Комарь Евгений</div>
+</dialog>
+
+<dialog id="resDlg">
+  <h2 id="resTitle"></h2>
+  <div class="bigstars" id="resStars"></div>
+  <p id="resText"></p>
+  <ul class="starlist" id="resList"></ul>
+  <div class="life" id="resLife" hidden>
+    <h3>Как это в жизни</h3>
+    <div id="resLifeIll"></div>
+    <p id="resLifeText"></p>
+  </div>
+  <div class="dlgbtns">
+    <button id="resWatch">Посмотреть ещё раз</button>
+    <button id="resEdit">Изменить мост</button>
+    <button class="primary" id="resNext">Следующий уровень</button>
+  </div>
+  <div class="dlgauthor">Автор: Комарь Евгений</div>
+</dialog>
+
+<dialog id="lvlDlg">
+  <h2>Уровни</h2>
+  <div class="lvls" id="lvlList"></div>
+  <div class="dlgbtns"><button id="lvlClose">Закрыть</button></div>
+  <div class="dlgauthor">Тренажёр «Землетрясение». Автор: Комарь Евгений</div>
+</dialog>
+
+<script>
+// ===== ФИЗИКА: XPBD, балки с осевой и изгибной жёсткостью =====
+const G = 9.81;
+const MATERIALS = {
+  floor:    { name: 'Перекрытие', density: 1500, EA: 4e9, EI: 4e7, tMax: 1e9, cMax: 1e9, mMax: 1e9, cost: 0, bend: true, thick: 0.3 },
+  wood:     { name: 'Дерево', density: 30, EA: 3e8, EI: 6e5, tMax: 3e5, cMax: 3e5, mMax: 2.2e4, cost: 25, bend: true, thick: 0.18 },
+  steel:    { name: 'Сталь', density: 60, EA: 2e9, EI: 6e6, tMax: 1.5e6, cMax: 1.5e6, mMax: 9e4, cost: 60, bend: true, thick: 0.2 },
+  brace:    { name: 'Связь', density: 15, EA: 4e8, EI: 3e5, tMax: 2.5e5, cMax: 2.5e5, mMax: 1.2e4, cost: 40, bend: true, thick: 0.08 },
+  cable:    { name: 'Трос', density: 4, EA: 2e8, EI: 0, tMax: 3.5e5, cMax: 0, mMax: 0, cost: 20, bend: false, thick: 0.05, tensionOnly: true, maxLen: 7 },
+  concrete: { name: 'Бетон', density: 300, EA: 6e9, EI: 3e7, tMax: 2e5, cMax: 5e6, mMax: 6e4, cost: 50, bend: true, thick: 0.32 },
+};
+const RIGID_COST = 60;
+const MAX_LEN = 7;
+
+function wrapAng(a) { while (a > Math.PI) a -= 2 * Math.PI; while (a <= -Math.PI) a += 2 * Math.PI; return a; }
+
+// Предел на сжатие с учётом выпучивания (формула Эйлера для шарнирного стержня)
+function compLimit(mat, L) {
+  if (mat.tensionOnly) return 0;
+  return Math.min(mat.cMax, Math.PI * Math.PI * mat.EI / (L * L));
+}
+
+function buildWorld(design, opts = {}) {
+  const rigid = opts.rigidMats || [], rigidNodes = new Set(design.elements.length ? (design.rigid || []) : []);
+  const P = { x: [], y: [], px: [], py: [], vx: [], vy: [], x0: [], y0: [], m: [], fixed: [], roller: [], road: [] };
+  const idx = new Map();
+  function addP(x, y, fixed, roller) {
+    const i = P.x.length;
+    P.x.push(x); P.y.push(y); P.px.push(x); P.py.push(y); P.vx.push(0); P.vy.push(0);
+    P.x0.push(x); P.y0.push(y); P.m.push(0); P.fixed.push(!!fixed && !roller); P.roller.push(!!roller); P.road.push(false);
+    return i;
+  }
+  for (const n of design.nodes) idx.set(n.id, addP(n.x, n.y, n.anchor, n.roller));
+  const dist = [], bend = [], els = [];
+  for (const e of design.elements) {
+    const mat = MATERIALS[e.mat];
+    const a = design.nodes.find(n => n.id === e.a), b = design.nodes.find(n => n.id === e.b);
+    const L = Math.hypot(b.x - a.x, b.y - a.y);
+    const nSeg = mat.bend ? Math.max(1, Math.round(L / 0.5)) : 1;
+    const ids = [idx.get(e.a)];
+    for (let k = 1; k < nSeg; k++) ids.push(addP(a.x + (b.x - a.x) * k / nSeg, a.y + (b.y - a.y) * k / nSeg, false));
+    ids.push(idx.get(e.b));
+    const segM = mat.density * L / nSeg;
+    const el = { src: e, mat, L, ids, dist: [], bend: [], broken: false, ratio: 0, cLim: compLimit(mat, L), brokenAt: null };
+    for (let k = 0; k < nSeg; k++) {
+      P.m[ids[k]] += segM / 2; P.m[ids[k + 1]] += segM / 2;
+      if (e.mat === 'road') { P.road[ids[k]] = true; P.road[ids[k + 1]] = true; }
+      const h = L / nSeg;
+      const c = { i: ids[k], j: ids[k + 1], rest: h, k: mat.EA / h, el, alive: true, lam: 0, T: 0, over: 0, idx: k, bs: [] };
+      dist.push(c); el.dist.push(c);
+    }
+    if (mat.bend) {
+      const h = L / nSeg;
+      for (let k = 1; k < nSeg; k++) {
+        const bc = { a: ids[k - 1], b: ids[k], c: ids[k + 1], th0: 0, k: mat.EI / h, el, alive: true, lam: 0, M: 0, idx: k };
+        bc.th0 = angleAt(P, bc);
+        bend.push(bc); el.bend.push(bc);
+        el.dist[k - 1].bs.push(bc); el.dist[k].bs.push(bc);
+      }
+    }
+    els.push(el);
+  }
+  // Жёсткие швы: элементы одного «жёсткого» материала в общем узле не поворачиваются друг относительно друга
+  for (const nd of design.nodes) {
+    const pi = idx.get(nd.id);
+    const at = els.filter(el => el.ids[0] === pi || el.ids[el.ids.length - 1] === pi);
+    for (let u = 0; u < at.length; u++) for (let v = u + 1; v < at.length; v++) {
+      const e1 = at[u], e2 = at[v];
+      const nodeRigid = rigidNodes.has(nd.id) && e1.mat.bend && e2.mat.bend && !e1.mat.tensionOnly && !e2.mat.tensionOnly;
+      if (!nodeRigid && (e1.src.mat !== e2.src.mat || !(e1.mat.rigid || rigid.includes(e1.src.mat)))) continue;
+      const end = el => el.ids[0] === pi ? { nb: el.ids[1], c: el.dist[0] } : { nb: el.ids[el.ids.length - 2], c: el.dist[el.dist.length - 1] };
+      const A = end(e1), B = end(e2);
+      const ux = P.x[A.nb] - P.x[pi], uy = P.y[A.nb] - P.y[pi], vx = P.x[B.nb] - P.x[pi], vy = P.y[B.nb] - P.y[pi];
+      const cos = (ux * vx + uy * vy) / (Math.hypot(ux, uy) * Math.hypot(vx, vy));
+      if (!nodeRigid && cos > -0.5) continue; // соединяем только «почти продолжающие» друг друга элементы (угол больше 120°)
+      const h = Math.min(A.c.rest, B.c.rest), weak = e1.mat.EI <= e2.mat.EI ? e1 : e2;
+      const bc = { a: A.nb, b: pi, c: B.nb, th0: 0, k: weak.mat.EI / h, el: weak, alive: true, lam: 0, M: 0, joint: true };
+      bc.th0 = angleAt(P, bc);
+      bend.push(bc); A.c.bs.push(bc); B.c.bs.push(bc);
+    }
+  }
+  // Опоры на земле движутся вместе с землёй. Заделка (жёсткий узел в земле) — через невидимую точку под опорой.
+  const ground = [], iso = [];
+  for (const nd of design.nodes) if (nd.anchor) {
+    const pi = idx.get(nd.id);
+    if (opts.iso) { P.fixed[pi] = false; P.roller[pi] = true; P.m[pi] += opts.iso.m; iso.push({ i: pi, x0: P.x[pi] }); }
+    else ground.push({ i: pi, x0: P.x[pi] });
+    if (rigidNodes.has(nd.id) && !opts.iso) {
+      const gi = addP(P.x[pi], P.y[pi] - 0.5, true);
+      if (opts.iso) { P.roller[gi] = true; P.m[gi] = opts.iso.m / 2; iso.push({ i: gi, x0: P.x[gi] }); } else ground.push({ i: gi, x0: P.x[gi] });
+      for (const el of els) {
+        if (el.mat.tensionOnly || !el.mat.bend) continue;
+        const end = el.ids[0] === pi ? el.ids[1] : el.ids[el.ids.length - 1] === pi ? el.ids[el.ids.length - 2] : null;
+        if (end == null) continue;
+        const c0 = el.ids[0] === pi ? el.dist[0] : el.dist[el.dist.length - 1];
+        const bc = { a: gi, b: pi, c: end, th0: 0, k: el.mat.EI / c0.rest, el, alive: true, lam: 0, M: 0, joint: true };
+        bc.th0 = angleAt(P, bc); bend.push(bc); c0.bs.push(bc);
+        if (opts.iso) { const d = { i: gi, j: pi, rest: 0.5, k: 1e10, el: { mat: { tensionOnly: false }, src: {} }, alive: true, lam: 0, T: 0, over: 0, bs: [], aux: true }; dist.push(d); }
+      }
+    }
+  }
+  // Маятник-гаситель: груз на жёсткой тяге под узлом крыши
+  let tmd = null;
+  if (opts.tmd) {
+    const host = idx.get(opts.tmd.node);
+    if (host != null) {
+      const ti = addP(P.x[host], P.y[host] - opts.tmd.L, false); P.m[ti] = opts.tmd.m;
+      dist.push({ i: host, j: ti, rest: opts.tmd.L, k: 1e9, el: { mat: { tensionOnly: false }, src: {} }, alive: true, lam: 0, T: 0, over: 0, bs: [], aux: true });
+      tmd = { host, i: ti, c: opts.tmd.c, L: opts.tmd.L };
+    }
+  }
+  const n = P.x.length;
+  P.wx = new Float64Array(n); P.wy = new Float64Array(n);
+  for (let i = 0; i < n; i++) {
+    const w = P.fixed[i] || P.m[i] <= 0 ? 0 : 1 / P.m[i];
+    P.wx[i] = w; P.wy[i] = P.roller[i] ? 0 : w;
+  }
+  P.fx = new Float64Array(n); P.fy = new Float64Array(n);
+  return { P, dist, bend, els, n, gScale: 0, time: 0, ground, iso, tmd, isoK: opts.iso ? opts.iso.k : 0, isoC: opts.iso ? opts.iso.c : 0, gx: () => 0 };
+}
+
+function angleAt(P, b) {
+  const ux = P.x[b.a] - P.x[b.b], uy = P.y[b.a] - P.y[b.b];
+  const vx = P.x[b.c] - P.x[b.b], vy = P.y[b.c] - P.y[b.b];
+  return Math.atan2(ux * vy - uy * vx, ux * vx + uy * vy);
+}
+
+function stepWorld(W, dt, sub = 100, iters = 2, damping = 0.35) {
+  const P = W.P, h = dt / sub, h2 = h * h, damp = Math.exp(-damping * h);
+  for (let s = 0; s < sub; s++) {
+    const ts = W.time + (s + 1) * h, gx = W.gx(ts), gv = (W.gx(ts + 1e-3) - W.gx(ts - 1e-3)) / 2e-3;
+    for (const g of W.ground) { P.x[g.i] = g.x0 + gx; P.px[g.i] = P.x[g.i]; }
+    for (const q of W.iso) {
+      const F = -W.isoK * (P.x[q.i] - q.x0 - gx) - W.isoC * (P.vx[q.i] - gv);
+      P.vx[q.i] += F * P.wx[q.i] * h;
+    }
+    if (W.tmd) {
+      const t = W.tmd, rel = P.vx[t.i] - P.vx[t.host], F = -t.c * rel;
+      P.vx[t.i] += F * P.wx[t.i] * h; if (P.wx[t.host]) P.vx[t.host] -= F * P.wx[t.host] * h;
+    }
+    for (let i = 0; i < W.n; i++) {
+      if (P.wx[i] === 0) continue;
+      P.vx[i] += P.fx[i] * P.wx[i] * h;
+      if (P.wy[i] !== 0) P.vy[i] += (-G * W.gScale + P.fy[i] * P.wy[i]) * h;
+      P.px[i] = P.x[i]; P.py[i] = P.y[i];
+      P.x[i] += P.vx[i] * h; P.y[i] += P.vy[i] * h;
+    }
+    for (const c of W.dist) c.lam = 0;
+    for (const b of W.bend) b.lam = 0;
+    for (let it = 0; it < iters; it++) {
+      for (const c of W.dist) {
+        if (!c.alive) continue;
+        const dx = P.x[c.i] - P.x[c.j], dy = P.y[c.i] - P.y[c.j];
+        const len = Math.hypot(dx, dy) || 1e-9;
+        const C = len - c.rest;
+        if (c.el.mat.tensionOnly && C < 0) { c.lam = 0; continue; }
+        const nx = dx / len, ny = dy / len;
+        const ws = (P.wx[c.i] + P.wx[c.j]) * nx * nx + (P.wy[c.i] + P.wy[c.j]) * ny * ny;
+        if (ws === 0) continue;
+        const at = 1 / (c.k * h2);
+        const dl = (-C - at * c.lam) / (ws + at);
+        c.lam += dl;
+        P.x[c.i] += P.wx[c.i] * dl * nx; P.y[c.i] += P.wy[c.i] * dl * ny;
+        P.x[c.j] -= P.wx[c.j] * dl * nx; P.y[c.j] -= P.wy[c.j] * dl * ny;
+      }
+      for (const b of W.bend) {
+        if (!b.alive) continue;
+        const ax_ = P.wx[b.a], ay_ = P.wy[b.a], bx_ = P.wx[b.b], by_ = P.wy[b.b], cx_ = P.wx[b.c], cy_ = P.wy[b.c];
+        if (ax_ + ay_ + bx_ + by_ + cx_ + cy_ === 0) continue;
+        const ux = P.x[b.a] - P.x[b.b], uy = P.y[b.a] - P.y[b.b];
+        const vx = P.x[b.c] - P.x[b.b], vy = P.y[b.c] - P.y[b.b];
+        const u2 = ux * ux + uy * uy || 1e-9, v2 = vx * vx + vy * vy || 1e-9;
+        const C = wrapAng(Math.atan2(ux * vy - uy * vx, ux * vx + uy * vy) - b.th0);
+        const gax = uy / u2, gay = -ux / u2, gcx = -vy / v2, gcy = vx / v2;
+        const gbx = -(gax + gcx), gby = -(gay + gcy);
+        const at = 1 / (b.k * h2);
+        const den = ax_ * gax * gax + ay_ * gay * gay + bx_ * gbx * gbx + by_ * gby * gby + cx_ * gcx * gcx + cy_ * gcy * gcy + at;
+        const dl = (-C - at * b.lam) / den;
+        b.lam += dl;
+        P.x[b.a] += ax_ * dl * gax; P.y[b.a] += ay_ * dl * gay;
+        P.x[b.b] += bx_ * dl * gbx; P.y[b.b] += by_ * dl * gby;
+        P.x[b.c] += cx_ * dl * gcx; P.y[b.c] += cy_ * dl * gcy;
+      }
+    }
+    for (let i = 0; i < W.n; i++) {
+      if (P.wx[i] === 0) continue;
+      P.vx[i] = (P.x[i] - P.px[i]) / h * damp;
+      P.vy[i] = (P.y[i] - P.py[i]) / h * damp;
+    }
+  }
+  W.h2 = h2;
+  W.time += dt;
+}
+
+// Пересчёт усилий и проверка на разрушение. Возвращает список только что сломанных элементов.
+function evalStress(W, allowBreak = true) {
+  const P = W.P, newly = [];
+  for (const b of W.bend) {
+    b.M = b.alive ? -b.lam / W.h2 : 0;
+    b.r = b.alive ? Math.abs(b.M) / b.el.mat.mMax : 0;
+  }
+  for (const el of W.els) {
+    let maxR = 0, worst = null;
+    if (el.immortal) { el.ratio = 0; continue; }
+    for (const c of el.dist) {
+      if (!c.alive) { c.T = 0; c.ra = 0; c.rb = 0; continue; }
+      const len = Math.hypot(P.x[c.i] - P.x[c.j], P.y[c.i] - P.y[c.j]);
+      let T = -c.lam / W.h2;
+      if (el.mat.tensionOnly && T < 0) T = 0;
+      c.T = T;
+      c.ra = T >= 0 ? T / el.mat.tMax : (el.cLim > 0 ? -T / el.cLim : 0);
+      let rb = 0, ms = 0, nb = 0;
+      const dx = P.x[c.j] - P.x[c.i], dy = P.y[c.j] - P.y[c.i];
+      for (const b of c.bs) {
+        if (!b.alive) continue;
+        rb = Math.max(rb, b.r);
+        const sg = (P.x[b.c] - P.x[b.a]) * dx + (P.y[b.c] - P.y[b.a]) * dy >= 0 ? 1 : -1;
+        ms += b.M * sg; nb++;
+      }
+      c.rb = rb; c.Ms = nb ? ms / nb : 0;
+      const r = c.ra + c.rb;
+      if (r > maxR) { maxR = r; worst = c; }
+    }
+    el.ratio = el.broken ? 0 : maxR;
+    if (!allowBreak || el.broken || !worst) continue;
+    if (maxR > 1) worst.over++; else for (const c of el.dist) c.over = 0;
+    if (worst.over >= 3) {
+      el.broken = true; worst.alive = false;
+      el.brokenAt = { x: (P.x[worst.i] + P.x[worst.j]) / 2, y: (P.y[worst.i] + P.y[worst.j]) / 2, t: W.time };
+      el.mode = worst.rb > worst.ra ? 'bend' : (worst.T < 0 ? 'comp' : 'tens');
+      for (const b of worst.bs) b.alive = false;
+      newly.push(el);
+    }
+  }
+  return newly;
+}
+
+
+// ===== ЗЕМЛЕТРЯСЕНИЕ: толчки, испытание, уровни · автор тренажёра: Комарь Евгений =====
+// Баллы → пиковое ускорение грунта (доля g), примерно по шкале MSK-64
+const PGA = { 5: 0.04, 6: 0.08, 7: 0.16, 8: 0.3, 9: 0.5 };
+const QUAKE_T = 10, START = 1.5;
+function quake(ball, f) {
+  const a = PGA[ball] * G, w = 2 * Math.PI * f, D = a / (w * w);
+  const env = t => t < 0 ? 0 : t < 1.5 ? t / 1.5 : t < QUAKE_T - 2 ? 1 : t < QUAKE_T ? (QUAKE_T - t) / 2 : 0;
+  return t => { const u = t - START; return D * env(u) * (Math.sin(w * u) + 0.35 * Math.sin(1.73 * w * u + 1) + 0.25 * Math.sin(0.61 * w * u + 2)) / 1.2; };
+}
+function designCost(d) {
+  let s = 0;
+  for (const e of d.elements) {
+    if (e.locked) continue;
+    const a = d.nodes.find(n => n.id === e.a), b = d.nodes.find(n => n.id === e.b);
+    s += Math.hypot(b.x - a.x, b.y - a.y) * MATERIALS[e.mat].cost;
+  }
+  for (const id of d.rigid || []) if (!(d.lockedRigid || []).includes(id)) s += RIGID_COST;
+  if (d.tmd) s += 400;
+  if (d.iso) s += 600;
+  return Math.round(s);
+}
+function floorTops(d) { return [...new Set(d.elements.filter(e => e.mat === 'floor').map(e => d.nodes.find(n => n.id === e.a).y))].sort((a, b) => a - b); }
+
+function createTest(design, level, q = level.quake, push = false) {
+  const opts = {};
+  if (design.iso) opts.iso = { m: 3000, k: design.iso.k, c: design.iso.c };
+  if (design.tmd) opts.tmd = { node: design.tmd.node, L: design.tmd.L, m: design.tmd.m || 6000, c: design.tmd.c || 3000 };
+  const W = buildWorld(design, opts);
+  W.gx = push ? () => 0 : quake(q.ball, q.f);
+  for (const el of W.els) if (el.src.mat === 'floor') el.immortal = true;
+  const H = Math.max(...design.nodes.map(n => n.y)) || 1;
+  let roof = 0, ry = -1;
+  for (let i = 0; i < W.n; i++) if (W.P.y0[i] > ry + 1e-6 && !W.P.fixed[i]) { ry = W.P.y0[i]; roof = i; }
+  const base = W.iso.length ? W.iso[0].i : null;
+  return { W, level, q, t: 0, H, roof, base, maxSlide: 0, maxDrift: 0, push, pushed: false, ups: [], prevV: 0, period: null, maxRatio: 0, firstBreak: null, collapsed: false, result: null, failReason: null, trace: [], endAt: null };
+}
+function tickTest(T, dt) {
+  const W = T.W, P = W.P;
+  T.t += dt;
+  W.gScale = Math.min(1, T.t / 1.0);
+  P.fx.fill(0); P.fy.fill(0);
+  if (T.push && !T.pushed && T.t > 1.3) { T.pushed = true; for (let i = 0; i < W.n; i++) if (P.wx[i]) P.vx[i] += 0.3 * Math.max(0, P.y0[i]) / T.H; }
+  stepWorld(W, dt);
+  const nb = evalStress(W, T.t > 0.5);
+  if (nb.length && !T.firstBreak) T.firstBreak = nb[0];
+  const g = W.gx(T.t);
+  const bx = T.base != null ? P.x[T.base] - P.x0[T.base] : g;
+  const drift = (P.x[T.roof] - P.x0[T.roof] - bx) / T.H;
+  if (T.base != null) { T.maxSlide = Math.max(T.maxSlide, Math.abs(bx - g)); if (T.maxSlide > 0.35 && !T.failReason) T.failReason = 'slide'; }
+  T.trace.push([T.t, g, P.x[T.roof] - P.x0[T.roof] - bx]);
+  if (!T.firstBreak) {
+    T.maxDrift = Math.max(T.maxDrift, Math.abs(drift));
+    let mr = 0; for (const el of W.els) mr = Math.max(mr, el.ratio); T.maxRatio = Math.max(T.maxRatio, mr);
+  }
+  let drop = 0;
+  for (let i = 0; i < W.n; i++) if (!W.P.fixed[i] && !W.P.roller[i]) drop = Math.max(drop, P.y0[i] - P.y[i]);
+  if (drop > 0.8) T.collapsed = true;
+  if (Math.abs(drift) > 0.25) T.collapsed = true;
+  if (!T.failReason && T.collapsed) T.failReason = 'collapse';
+  if (!T.failReason && T.firstBreak) T.failReason = 'broke';
+  if (T.failReason && T.endAt === null) T.endAt = T.t + 2.5;
+  if (T.push) {
+    const v = P.x[T.roof] - P.x0[T.roof] - bx;
+    if (T.pushed && T.prevV < 0 && v >= 0) T.ups.push(T.t);
+    T.prevV = v;
+    if (T.t > 9 && !T.result) { T.result = 'push'; T.period = T.ups.length >= 3 ? (T.ups[T.ups.length - 1] - T.ups[0]) / (T.ups.length - 1) : null; }
+    return T;
+  }
+  if (T.endAt === null && T.t > START + QUAKE_T + 1.5) T.endAt = T.t;
+  if (T.endAt !== null && T.t >= T.endAt && !T.result) T.result = T.failReason ? 'fail' : 'pass';
+  return T;
+}
+function scoreTest(T, d) {
+  const cost = designCost(d), pass = T.result === 'pass', L = T.level;
+  return { pass, cost, stars: [pass, pass && cost <= L.budget, pass && T.maxDrift <= L.drift] };
+}
+// «Толкнуть дом»: свободные колебания без землетрясения — измеряем период
+function pushTest(design) {
+  const opts = {};
+  if (design.iso) opts.iso = { m: 3000, k: design.iso.k, c: design.iso.c };
+  if (design.tmd) opts.tmd = { node: design.tmd.node, L: design.tmd.L, m: design.tmd.m || 6000, c: design.tmd.c || 3000 };
+  const W = buildWorld(design, opts); W.gScale = 1;
+  let roof = 0, ry = -1;
+  for (let i = 0; i < W.n; i++) if (W.P.y0[i] > ry + 1e-6 && !W.P.fixed[i]) { ry = W.P.y0[i]; roof = i; }
+  for (let k = 0; k < 90; k++) { W.P.fx.fill(0); W.P.fy.fill(0); stepWorld(W, 1 / 60); }
+  for (let i = 0; i < W.n; i++) if (!W.P.fixed[i]) W.P.vx[i] += 0.25 * (W.P.y0[i] / ry);
+  const xs = [], x0 = W.P.x[roof];
+  for (let k = 0; k < 600; k++) { stepWorld(W, 1 / 60); xs.push(W.P.x[roof] - x0); }
+  const ups = [];
+  for (let k = 1; k < xs.length; k++) if (xs[k - 1] < 0 && xs[k] >= 0) ups.push(k / 60);
+  return ups.length >= 3 ? (ups[ups.length - 1] - ups[0]) / (ups.length - 1) : null;
+}
+
+// ===== УРОВНИ =====
+// Перекрытия даны (их нельзя трогать), опоры — на земле. Ребёнок строит колонны и связи.
+function floorsDesign(xs, heights, extra = {}) {
+  const nodes = [], elements = [];
+  let id = 1;
+  const N = (x, y, anchor) => { let n = nodes.find(q => q.x === x && q.y === y); if (!n) { n = { id: id++, x, y, anchor: !!anchor }; nodes.push(n); } return n.id; };
+  for (const x of xs) N(x, 0, true);
+  for (const y of heights) for (let i = 0; i + 1 < xs.length; i++) elements.push({ id: id++, a: N(xs[i], y), b: N(xs[i + 1], y), mat: 'floor', locked: true });
+  return { nodes, elements, rigid: [], ...extra };
+}
+function towerDesign(xs, heights, colMat, braceBays) {
+  const d = floorsDesign(xs, heights);
+  let id = Math.max(...d.nodes.map(n => n.id), ...d.elements.map(e => e.id)) + 1;
+  const nid = (x, y) => d.nodes.find(n => n.x === x && n.y === y).id;
+  const lv = [0, ...heights];
+  for (let k = 0; k + 1 < lv.length; k++) for (const x of xs) d.elements.push({ id: id++, a: nid(x, lv[k]), b: nid(x, lv[k + 1]), mat: colMat, locked: true });
+  for (let k = 0; k + 1 < lv.length; k++) for (const b of braceBays) d.elements.push({ id: id++, a: nid(xs[b], lv[k]), b: nid(xs[b + 1], lv[k + 1]), mat: 'brace', locked: true });
+  d.rigid = d.nodes.map(n => n.id); d.lockedRigid = d.rigid.slice();
+  return d;
+}
+const LEVELS = [
+  {
+    id: 1, title: 'Диагональ', budget: 700, drift: 0.01, quake: { ball: 7, f: 2.2 }, mats: ['steel', 'wood', 'brace'], rigidTool: false,
+    start: () => floorsDesign([0, 5], [3.2]), view: { x0: -3, x1: 8, y0: -1.5, y1: 5.5 },
+    task: 'Поставь колонны под перекрытие и сделай так, чтобы павильон пережил землетрясение в 7 баллов.',
+    idea: 'Колонны на шарнирах держат вес, пока всё стоит ровно. Но при толчке вбок прямоугольник складывается, как коробка без дна. Диагональ превращает его в два треугольника — а треугольник не сложить.',
+    tip: 'Сначала поставь две колонны от опор к углам перекрытия. Испытай. Потом добавь диагональ-связь — и испытай снова.',
+    life: 'Диагональные связи видно в каркасах складов, вышек и многих старых промышленных зданий. В Японии деревянные дома укрепляют раскосами — косыми брусьями в стенах.',
+  },
+  {
+    id: 2, title: 'Жёсткие узлы', budget: 1300, drift: 0.012, quake: { ball: 7, f: 2.0 }, mats: ['steel', 'wood'], rigidTool: true,
+    start: () => floorsDesign([0, 6], [3.2, 6.4]), view: { x0: -3, x1: 9, y0: -1.5, y1: 8.5 },
+    task: 'В этом доме будут большие окна — диагонали ставить нельзя. Построй каркас, который выстоит в 7 баллов.',
+    idea: 'Если узел жёсткий (сварной), колонна и балка не могут повернуться друг относительно друга. Такой каркас — рама — сопротивляется толчкам изгибом колонн. Колонны можно и заделать в землю.',
+    tip: 'Инструмент «Жёсткий узел»: нажми на узел, и он станет квадратным. Сделай жёсткими узлы, где колонна встречает перекрытие, и опоры внизу.',
+    life: 'Так строят большинство современных многоэтажек: железобетонные или стальные рамы с жёсткими узлами. Окна при этом можно делать где угодно.',
+  },
+  {
+    id: 3, title: 'Крест-накрест', budget: 3300, drift: 0.008, quake: { ball: 8, f: 2.4 }, mats: ['steel', 'cable'], rigidTool: false,
+    start: () => floorsDesign([0, 5, 10], [3.2, 6.4, 9.6]), view: { x0: -3, x1: 13, y0: -1.5, y1: 12 },
+    task: 'Трёхэтажный дом и 8 баллов. Для связей есть только тросы — лёгкие и дешёвые. Подумай, сколько их нужно.',
+    idea: 'Трос держит только растяжение. Когда дом качнётся влево, одна диагональ натянется, а другая провиснет. Поэтому тросы ставят крестом: в каждую сторону работает своя диагональ.',
+    tip: 'Посмотри на испытании: какой трос провисает, а какой синеет от натяжения? Тросу можно быть длиной до 7 м.',
+    life: 'Крестовые связи из тросов и тонких стальных тяжей видны на ангарах, мостах, опорах ЛЭП и в стеклянных фасадах.',
+  },
+  {
+    id: 4, title: 'Высокий дом', budget: 5400, drift: 0.01, quake: { ball: 7, f: 0.75 }, mats: ['steel', 'wood', 'brace', 'cable'], rigidTool: true,
+    start: () => floorsDesign([0, 5, 10], [3.2, 6.4, 9.6, 12.8, 16]), view: { x0: -3, x1: 13, y0: -1.5, y1: 18.5 },
+    task: 'Пятиэтажный дом. Землетрясение медленное — оно раскачивает именно высокие здания. Построй и проверь кнопкой «Толкнуть дом», как он качается.',
+    idea: 'У каждого здания своя частота колебаний: высокое качается медленно, низкое — быстро. Если толчки земли попадают в такт дому, начинается резонанс — как на качелях, когда их подталкивают вовремя.',
+    tip: 'Сравни период качания дома (кнопка «Толкнуть дом») с периодом толчков землетрясения. Чем жёстче каркас, тем быстрее он качается и тем дальше уходит от резонанса.',
+    life: 'В 1985 году землетрясение в Мехико сильнее всего разрушило дома в 6–15 этажей: их период качания совпал с колебаниями мягкого грунта под городом.',
+  },
+  {
+    id: 5, title: 'Маятник-гаситель', budget: 600, drift: 0.012, quake: { ball: 6, f: 0.62 }, mats: [], rigidTool: false, tmdTool: true,
+    start: () => towerDesign([0, 4], [3.2, 6.4, 9.6, 12.8, 16, 19.2, 22.4], 'steel', []), view: { x0: -8, x1: 12, y0: -1.5, y1: 25 },
+    task: 'Узкая башня уже построена и раскачивается в резонанс. Подвесь на крышу маятник-гаситель и настрой его длину так, чтобы башня устояла.',
+    idea: 'Маятник качается в противофазе с башней и «гасит» её раскачку. Работает, только если его собственный такт совпадает с тактом башни. Такт маятника зависит от длины подвеса.',
+    tip: 'Нажми «Толкнуть дом», чтобы узнать период башни. Подбери длину маятника так, чтобы его период был таким же, — ниже показан период маятника.',
+    life: 'В небоскрёбе Тайбэй 101 на Тайване висит стальной шар-гаситель массой около 660 тонн. Его можно увидеть — к нему водят экскурсии.',
+  },
+  {
+    id: 6, title: 'Сейсмоизоляция', budget: 700, drift: 0.006, quake: { ball: 9, f: 2.6 }, mats: [], rigidTool: false, isoTool: true,
+    start: () => towerDesign([0, 4.5, 9], [3.2, 6.4, 9.6], 'concrete', []), view: { x0: -3, x1: 12, y0: -1.5, y1: 12 },
+    task: 'Жёсткий бетонный дом, землетрясение в 9 баллов. Дом не надо укреплять — его надо отделить от земли. Поставь его на резиновые опоры и подбери их мягкость.',
+    idea: 'Если дом стоит на мягких резиновых подушках, земля дёргается под ним, а сам дом плавно покачивается. Толчки почти не доходят до этажей.',
+    tip: 'Твёрдые опоры почти не отличаются от бетона — толчки проходят насквозь. Чем мягче опоры, тем меньше толчков доходит до этажей.',
+    life: 'Сейсмоизоляцию — резинометаллические опоры под фундаментом — применяют в Японии, Китае, Чили и США. В России так защищены, например, здания в Сочи и на Камчатке.',
+  },
+  {
+    id: 7, title: 'Песочница', budget: Infinity, drift: 0.01, quake: { ball: 7, f: 2 }, mats: ['steel', 'wood', 'brace', 'cable', 'concrete'], rigidTool: true, tmdTool: true, isoTool: true, sandbox: true,
+    start: () => floorsDesign([0, 5, 10], [3.2, 6.4, 9.6, 12.8]), view: { x0: -6, x1: 16, y0: -1.5, y1: 16 },
+    task: 'Свободная стройка: выбери силу и частоту землетрясения и проверь любые идеи.',
+    idea: 'Здесь всё можно: связи, жёсткие узлы, маятник, сейсмоизоляция. Попробуй построить самый дешёвый дом, который переживёт 9 баллов.',
+    tip: 'Меняй частоту землетрясения и смотри, при какой дом раскачивается сильнее всего — это и есть резонанс.',
+  },
+];
+
+
+// ===== ПРИЛОЖЕНИЕ «ЗЕМЛЕТРЯСЕНИЕ» · автор: Комарь Евгений =====
+const $ = s => document.querySelector(s);
+const cv = $('#cv'), ctx = cv.getContext('2d');
+const GRID = 0.4, SNAP_NODE = 0.3, STORE = 'zemletryasenie-v1';
+const fmt = (v, d = 1) => v.toFixed(d).replace('.', ',');
+const ISO = [{ k: 0, name: 'Нет' }, { k: 3e6, name: 'Твёрдые' }, { k: 4e5, name: 'Средние' }, { k: 1.5e5, name: 'Мягкие' }, { k: 6e4, name: 'Очень мягкие' }];
+const MATCOL = { floor: 'floor', wood: 'wood', steel: 'steel', brace: 'brace', cable: 'cable', concrete: 'stone' };
+
+let theme = {};
+function readTheme() {
+  const cs = getComputedStyle(document.documentElement);
+  for (const k of ['paper', 'sheet', 'grid', 'gridMajor', 'ink', 'inkSoft', 'tension', 'compress', 'wood', 'steel', 'road', 'stone', 'water', 'ground', 'danger', 'ok', 'floor', 'brace', 'cable', 'soil'])
+    theme[k] = cs.getPropertyValue('--' + k).trim();
+}
+readTheme();
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', readTheme);
+const matColor = m => theme[MATCOL[m]] || theme.ink;
+
+const S = {
+  li: 0, design: null, mode: 'build', tool: 'build', mat: 'steel', start: null, hover: null, dragging: false,
+  undo: [], test: null, speed: 1, exag: 20, nextId: 1, view: null, q: { ball: 7, f: 2 }, tmdL: 1.5, lastPeriod: null,
+  progress: { stars: {}, designs: {} },
+};
+function load() { try { const v = JSON.parse(localStorage.getItem(STORE)); if (v && v.stars) S.progress = v; } catch (e) { } }
+function save() { try { localStorage.setItem(STORE, JSON.stringify(S.progress)); } catch (e) { } }
+const level = () => LEVELS[S.li];
+const nodeById = id => S.design.nodes.find(n => n.id === id);
+const starsHTML = a => [0, 1, 2].map(i => `<span class="${a && a[i] ? '' : 'off'}">★</span>`).join('');
+const tons = kg => `${fmt(kg / 1000, kg % 1000 ? 1 : 0)} т`;
+
+// ---------- уровни ----------
+function startLevel(li, intro = true) {
+  S.li = li; const L = level();
+  const saved = S.progress.designs[L.id];
+  S.design = saved ? JSON.parse(JSON.stringify(saved)) : L.start();
+  S.design.rigid = S.design.rigid || [];
+  S.nextId = Math.max(0, ...S.design.nodes.map(n => n.id), ...S.design.elements.map(e => e.id)) + 1;
+  S.q = { ...L.quake }; S.undo = []; S.start = null; S.lastPeriod = null;
+  if (S.design.tmd) S.tmdL = S.design.tmd.L;
+  if (!L.mats.includes(S.mat)) S.mat = L.mats[0] || null;
+  exitTest();
+  $('#title').textContent = `${L.id}. ${L.title}`;
+  $('#task').textContent = L.task;
+  $('#hstars').hidden = !!L.sandbox; updateHeaderStars();
+  $('#matBox').hidden = !L.mats.length;
+  $('#toolRigid').hidden = !L.rigidTool; $('#toolTmd').hidden = !L.tmdTool;
+  $('#tmdBox').hidden = !L.tmdTool; $('#isoBox').hidden = !L.isoTool;
+  $('#quakeCtl').hidden = !L.sandbox;
+  $('#toolBuild').hidden = $('#toolDel').hidden = !L.mats.length;
+  buildMatButtons(); buildIsoButtons(); buildBalls(); syncTmd();
+  setTool(L.mats.length ? 'build' : L.tmdTool ? 'tmd' : 'build');
+  $('#rule').textContent = L.mats.length ? 'Самая длинная деталь — 7 м. Узлы — шарниры' + (L.rigidTool ? ', если не сделать их жёсткими.' : '.') : 'Дом уже построен — его трогать нельзя.';
+  $('#periodOut').textContent = ''; $('#stRes').textContent = 'не проводилось'; $('#stDefl').textContent = '—';
+  resize(); updateStamp(); quakeInfo();
+  if (intro) openIntro();
+}
+function persist() { S.progress.designs[level().id] = S.design; save(); }
+function updateHeaderStars() { $('#hstars').innerHTML = starsHTML(S.progress.stars[level().id]); }
+function buildMatButtons() {
+  const box = $('#mats'); box.innerHTML = '';
+  for (const k of level().mats) {
+    const m = MATERIALS[k], b = document.createElement('button');
+    b.className = 'mat'; b.setAttribute('aria-pressed', k === S.mat && S.tool === 'build');
+    b.innerHTML = `<span class="sw" style="background:${matColor(k)}"></span><span>${m.name}</span><span class="price">${m.cost} ₽/м</span>`;
+    b.onclick = () => { S.mat = k; setTool('build'); };
+    box.appendChild(b);
+  }
+}
+function buildIsoButtons() {
+  const box = $('#isos'); box.innerHTML = '';
+  const cur = S.design.iso ? S.design.iso.k : 0;
+  ISO.forEach(o => {
+    const b = document.createElement('button'); b.textContent = o.name; b.setAttribute('aria-pressed', cur === o.k);
+    b.onclick = () => { pushUndo(); S.design.iso = o.k ? { k: o.k, c: 0.4 * Math.sqrt(o.k * 5e4) } : null; persist(); buildIsoButtons(); updateStamp(); S.lastPeriod = null; $('#periodOut').textContent = ''; };
+    box.appendChild(b);
+  });
+}
+function buildBalls() {
+  const box = $('#balls'); box.innerHTML = '';
+  for (const b of [5, 6, 7, 8, 9]) {
+    const el = document.createElement('button'); el.textContent = b; el.setAttribute('aria-pressed', S.q.ball === b);
+    el.setAttribute('aria-label', `${b} баллов`);
+    el.onclick = () => { S.q.ball = b; buildBalls(); quakeInfo(); };
+    box.appendChild(el);
+  }
+  $('#fq').value = S.q.f; $('#fVal').textContent = `${fmt(S.q.f, 2)} Гц`;
+}
+$('#fq').oninput = e => { S.q.f = +e.target.value; $('#fVal').textContent = `${fmt(S.q.f, 2)} Гц`; quakeInfo(); };
+function quakeInfo() {
+  const per = 1 / S.q.f;
+  $('#quakeInfo').innerHTML = `Землетрясение: <b>${S.q.ball} баллов</b><br>толчок каждые <b>${fmt(per, 2)} с</b>`;
+}
+function syncTmd() {
+  $('#tmdL').value = S.tmdL; $('#tmdVal').textContent = `${fmt(S.tmdL, 2)} м`;
+  $('#tmdPer').textContent = `Такт маятника: ${fmt(2 * Math.PI * Math.sqrt(S.tmdL / G), 2)} с. ${S.design && S.design.tmd ? 'Маятник висит на крыше.' : 'Выбери «Маятник» и нажми на узел крыши.'}`;
+}
+$('#tmdL').oninput = e => { S.tmdL = +e.target.value; if (S.design.tmd) { S.design.tmd.L = S.tmdL; persist(); } syncTmd(); };
+function setTool(t) {
+  S.tool = t; S.start = null;
+  $('#toolBuild').setAttribute('aria-pressed', t === 'build'); $('#toolDel').setAttribute('aria-pressed', t === 'del');
+  $('#toolRigid').setAttribute('aria-pressed', t === 'rigid'); $('#toolTmd').setAttribute('aria-pressed', t === 'tmd');
+  cv.style.cursor = t === 'build' ? 'crosshair' : 'pointer';
+  buildMatButtons();
+}
+$('#toolBuild').onclick = () => setTool('build');
+$('#toolDel').onclick = () => setTool('del');
+$('#toolRigid').onclick = () => setTool('rigid');
+$('#toolTmd').onclick = () => setTool('tmd');
+
+// ---------- экран ----------
+function resize() {
+  const r = cv.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
+  cv.width = Math.max(1, Math.round(r.width * dpr)); cv.height = Math.max(1, Math.round(r.height * dpr));
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const v = level().view, w = r.width, h = r.height, padT = 36, padB = 130;
+  const s = Math.min((w - 40) / (v.x1 - v.x0), (h - padT - padB) / (v.y1 - v.y0));
+  S.view = { s, w, h, ox: (w - (v.x1 - v.x0) * s) / 2 - v.x0 * s, oy: padT + (v.y1) * s, graphY: h - 112 };
+}
+window.addEventListener('resize', resize);
+const sx = x => S.view.ox + x * S.view.s, sy = y => S.view.oy - y * S.view.s;
+const wx = px => (px - S.view.ox) / S.view.s, wy = py => (S.view.oy - py) / S.view.s;
+
+// ---------- редактор ----------
+function nodeAt(x, y, r = SNAP_NODE) { let b = null, bd = r; for (const n of S.design.nodes) { const d = Math.hypot(n.x - x, n.y - y); if (d < bd) { bd = d; b = n; } } return b; }
+function snap(x, y) { const n = nodeAt(x, y); return n ? { x: n.x, y: n.y, node: n } : { x: Math.round(x / GRID) * GRID, y: Math.round(y / GRID) * GRID, node: null }; }
+function validPoint(p) { if (p.node) return true; const v = level().view; return p.y > 0.01 && p.x > v.x0 && p.x < v.x1 && p.y < v.y1; }
+function pushUndo() { S.undo.push(JSON.stringify(S.design)); if (S.undo.length > 60) S.undo.shift(); }
+function getNode(p) {
+  if (p.node) return p.node;
+  const ex = S.design.nodes.find(n => Math.abs(n.x - p.x) < 1e-6 && Math.abs(n.y - p.y) < 1e-6);
+  if (ex) return ex;
+  const n = { id: S.nextId++, x: p.x, y: p.y }; S.design.nodes.push(n); return n;
+}
+function tryAdd(a, b) {
+  const len = Math.hypot(b.x - a.x, b.y - a.y), m = MATERIALS[S.mat], max = m.maxLen || MAX_LEN;
+  if (len < 0.05) return null;
+  if (len > max + 1e-6) { toast(`Слишком длинно: ${fmt(len)} м. Можно до ${fmt(max, 0)} м.`); return null; }
+  if (!validPoint(b)) { toast('Строить можно только над землёй.'); return null; }
+  pushUndo();
+  const na = getNode(a), nb = getNode(b);
+  if (S.design.elements.some(e => (e.a === na.id && e.b === nb.id) || (e.a === nb.id && e.b === na.id))) { S.undo.pop(); return null; }
+  S.design.elements.push({ id: S.nextId++, a: na.id, b: nb.id, mat: S.mat });
+  persist(); updateStamp(); S.lastPeriod = null; $('#periodOut').textContent = '';
+  return nb;
+}
+function distSeg(px, py, a, b) { const dx = b.x - a.x, dy = b.y - a.y, l2 = dx * dx + dy * dy || 1; const t = Math.max(0, Math.min(1, ((px - a.x) * dx + (py - a.y) * dy) / l2)); return Math.hypot(px - a.x - t * dx, py - a.y - t * dy); }
+function elementAt(x, y) { let b = null, bd = 0.3; for (const e of S.design.elements) { const d = distSeg(x, y, nodeById(e.a), nodeById(e.b)); if (d < bd) { bd = d; b = e; } } return b; }
+function cleanup() {
+  const used = new Set(); for (const e of S.design.elements) { used.add(e.a); used.add(e.b); }
+  S.design.nodes = S.design.nodes.filter(n => n.anchor || used.has(n.id));
+  S.design.rigid = S.design.rigid.filter(id => S.design.nodes.some(n => n.id === id));
+  if (S.design.tmd && !S.design.nodes.some(n => n.id === S.design.tmd.node)) S.design.tmd = null;
+}
+function deleteAt(x, y) {
+  if (S.design.tmd) { const n = nodeById(S.design.tmd.node); if (n && Math.hypot(x - n.x, y - (n.y - S.design.tmd.L)) < 0.5) { pushUndo(); S.design.tmd = null; persist(); syncTmd(); updateStamp(); return; } }
+  const e = elementAt(x, y);
+  if (!e) return;
+  if (e.locked) { toast(e.mat === 'floor' ? 'Перекрытия — часть задания, их не убрать.' : 'Эта часть дома уже построена.'); return; }
+  pushUndo(); S.design.elements = S.design.elements.filter(q => q !== e); cleanup(); persist(); updateStamp();
+}
+function toggleRigid(x, y) {
+  const n = nodeAt(x, y, 0.4); if (!n) return;
+  if ((S.design.lockedRigid || []).includes(n.id)) { toast('Этот узел уже жёсткий.'); return; }
+  pushUndo();
+  const i = S.design.rigid.indexOf(n.id);
+  if (i >= 0) S.design.rigid.splice(i, 1); else S.design.rigid.push(n.id);
+  persist(); updateStamp(); S.lastPeriod = null; $('#periodOut').textContent = '';
+}
+function placeTmd(x, y) {
+  const n = nodeAt(x, y, 0.5); if (!n || n.anchor) { toast('Нажми на узел — лучше на самом верху башни.'); return; }
+  pushUndo(); S.design.tmd = { node: n.id, L: S.tmdL, m: 6000 }; persist(); syncTmd(); updateStamp(); S.lastPeriod = null; $('#periodOut').textContent = '';
+}
+function evPoint(e) { const r = cv.getBoundingClientRect(); return { x: wx(e.clientX - r.left), y: wy(e.clientY - r.top) }; }
+cv.addEventListener('pointerdown', e => {
+  if (S.mode !== 'build') return;
+  const w = evPoint(e);
+  if (S.tool === 'del') return deleteAt(w.x, w.y);
+  if (S.tool === 'rigid') return toggleRigid(w.x, w.y);
+  if (S.tool === 'tmd') return placeTmd(w.x, w.y);
+  if (!S.mat) return;
+  if (e.button === 2) { S.start = null; return; }
+  cv.setPointerCapture(e.pointerId);
+  const p = snap(w.x, w.y);
+  if (!S.start) { if (!validPoint(p)) { toast('Начни с опоры на земле или с узла.'); return; } S.start = p; S.dragging = true; }
+  else if (Math.abs(p.x - S.start.x) < 1e-6 && Math.abs(p.y - S.start.y) < 1e-6) S.start = null;
+  else { const nb = tryAdd(S.start, p); if (nb) S.start = { x: nb.x, y: nb.y, node: nb }; S.dragging = false; }
+});
+cv.addEventListener('pointermove', e => { if (S.mode !== 'build') return; const w = evPoint(e); S.hover = S.tool === 'build' ? snap(w.x, w.y) : { x: w.x, y: w.y, raw: true }; });
+cv.addEventListener('pointerup', e => {
+  if (S.mode !== 'build' || S.tool !== 'build' || !S.dragging || !S.start) return;
+  S.dragging = false;
+  const w = evPoint(e), p = snap(w.x, w.y);
+  if (Math.abs(p.x - S.start.x) < 1e-6 && Math.abs(p.y - S.start.y) < 1e-6) return;
+  const nb = tryAdd(S.start, p); if (nb) S.start = { x: nb.x, y: nb.y, node: nb };
+});
+cv.addEventListener('pointerleave', () => { S.hover = null; });
+cv.addEventListener('contextmenu', e => { e.preventDefault(); S.start = null; });
+window.addEventListener('keydown', e => { if (e.key === 'Escape') S.start = null; if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); undo(); } });
+function undo() { if (S.mode !== 'build' || !S.undo.length) return; S.design = JSON.parse(S.undo.pop()); S.start = null; persist(); updateStamp(); buildIsoButtons(); syncTmd(); }
+$('#undoBtn').onclick = undo;
+$('#clearBtn').onclick = () => { pushUndo(); S.design = level().start(); S.design.rigid = S.design.rigid || []; S.nextId = Math.max(S.nextId, ...S.design.nodes.map(n => n.id), ...S.design.elements.map(e => e.id)) + 1; S.start = null; persist(); updateStamp(); buildIsoButtons(); syncTmd(); toast('Начинаем заново. «Отменить» вернёт постройку.'); };
+let toastT = null;
+function toast(m) { const t = $('#toast'); t.textContent = m; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 2400); }
+function updateStamp() {
+  const L = level(), c = designCost(S.design);
+  $('#stObj').textContent = `№ ${L.id}. ${L.title}`;
+  const el = $('#stCost'); el.textContent = L.sandbox ? `${c} ₽` : `${c} ₽ из ${L.budget} ₽`; el.className = c > L.budget ? 'over' : '';
+}
+
+// ---------- испытание ----------
+function runOpts() { return S.design; }
+function enterTest(push = false) {
+  if (!S.design.elements.some(e => !e.locked) && !level().start().elements.some(e => e.mat !== 'floor')) { toast('Сначала поставь колонны.'); return; }
+  S.mode = 'test'; S.start = null;
+  S.test = createTest(JSON.parse(JSON.stringify(S.design)), level(), { ...S.q }, push);
+  S.speed = 1; setSpeed(); S.exag = +$('#exag').value; $('#exagVal').textContent = '×' + S.exag;
+  $('#buildPanel').hidden = true; $('#testPanel').hidden = false;
+  $('#stRes').textContent = push ? 'толкаем…' : 'идёт…';
+  cv.style.cursor = 'default';
+}
+function exitTest() { S.mode = 'build'; S.test = null; $('#buildPanel').hidden = false; $('#testPanel').hidden = true; setTool(S.tool); updateStamp(); }
+function setSpeed() { document.querySelectorAll('[data-speed]').forEach(b => b.setAttribute('aria-pressed', +b.dataset.speed === S.speed)); }
+document.querySelectorAll('[data-speed]').forEach(b => b.onclick = () => { S.speed = +b.dataset.speed; setSpeed(); });
+$('#exag').oninput = e => { S.exag = +e.target.value; $('#exagVal').textContent = '×' + S.exag; };
+function advance() {
+  const T = S.test; if (!T || T.result) return;
+  let sp = S.speed;
+  if (T.firstBreak && T.t < T.firstBreak.brokenAt.t + 1 && sp > 0.3) sp = 0.3;
+  if (sp <= 0) return;
+  tickTest(T, sp / 60);
+  if (!T.push) {
+    $('#driftVal').textContent = `${fmt(T.maxDrift * 100, 2)} %`;
+    $('#loadVal').textContent = `${Math.round(Math.min(T.maxRatio, 1.5) * 100)} %`;
+    $('#stDefl').textContent = `${fmt(T.maxDrift * 100, 2)} % высоты`;
+  }
+  if (T.result) finishTest();
+}
+function finishTest() {
+  const T = S.test, L = level();
+  if (T.push) {
+    S.lastPeriod = T.period;
+    const msg = T.period ? `Такт дома: один качок за <b>${fmt(T.period, 2)} с</b>. Толчки землетрясения — каждые ${fmt(1 / S.q.f, 2)} с.${Math.abs(T.period * S.q.f - 1) < 0.2 ? ' <b>Почти совпадают — опасность резонанса!</b>' : ''}` : 'Дом не раскачался — он очень жёсткий или сложился сразу.';
+    exitTest(); $('#periodOut').innerHTML = msg; $('#stRes').textContent = 'толкнули'; return;
+  }
+  const sc = scoreTest(T, S.design);
+  $('#stRes').textContent = sc.pass ? 'устоял' : 'не устоял';
+  if (sc.pass && !L.sandbox) { const old = S.progress.stars[L.id] || [false, false, false]; S.progress.stars[L.id] = old.map((v, i) => v || sc.stars[i]); save(); updateHeaderStars(); }
+  setTimeout(() => showResult(T, sc), 400);
+}
+$('#testBtn').onclick = () => enterTest(false);
+$('#pushBtn').onclick = () => enterTest(true);
+$('#backBtn').onclick = exitTest;
+
+function showResult(T, sc) {
+  const L = level();
+  $('#resStars').innerHTML = L.sandbox ? '' : starsHTML(sc.stars); $('#resStars').hidden = !!L.sandbox;
+  const list = $('#resList'); list.innerHTML = '';
+  const li = (ok, t) => { const e = document.createElement('li'); e.innerHTML = L.sandbox ? t : `<span style="color:var(--${ok ? 'star' : 'gridMajor'})">★</span> ${t}`; list.appendChild(e); };
+  if (sc.pass) {
+    $('#resTitle').textContent = 'Дом устоял!';
+    $('#resText').textContent = `Землетрясение в ${T.q.ball} баллов позади — ничего не сломалось.`;
+    li(true, 'Ни одна деталь не сломалась.');
+    if (!L.sandbox) li(sc.stars[1], sc.stars[1] ? `Уложился в бюджет: ${sc.cost} ₽ из ${L.budget} ₽.` : `Дороговато: ${sc.cost} ₽ при бюджете ${L.budget} ₽.`);
+    li(sc.stars[2], `Крыша качнулась на ${fmt(T.maxDrift * 100, 2)} % высоты дома${sc.stars[2] ? ' — жильцы почти ничего не заметили.' : ` — больше нормы (${fmt(L.drift * 100, 1)} %): посуда летит с полок.`}`);
+    if (L.life) li(true, '<b>Как это в жизни.</b> ' + L.life);
+  } else if (T.failReason === 'collapse') {
+    $('#resTitle').textContent = 'Дом сложился';
+    $('#resText').textContent = 'Каркас перекосился, как коробка без дна. Прямоугольник на шарнирах не держит толчки вбок: нужны диагонали-связи или жёсткие узлы.';
+  } else {
+    const el = T.firstBreak, n = el.mat.name.toLowerCase();
+    $('#resTitle').textContent = el.mat.tensionOnly ? 'Трос порвался' : 'Деталь сломалась';
+    $('#resText').textContent = 'Первая поломка отмечена кругом. ' + (el.mode === 'bend' ? `Деталь «${n}» сломалась от изгиба: её слишком сильно гнуло. Поставь связи или возьми материал прочнее.`
+      : el.mode === 'comp' ? `Деталь «${n}» сломалась от сжатия: длинные тонкие элементы выгибаются. Возьми прочнее или поставь связи крестом, чтобы каждая работала на растяжение.`
+      : `Деталь «${n}» разорвало растяжением. Раздели нагрузку: поставь больше связей.`);
+  }
+  $('#resNext').hidden = !(sc.pass && S.li < LEVELS.length - 1);
+  $('#resDlg').showModal();
+}
+$('#resEdit').onclick = () => { $('#resDlg').close(); exitTest(); };
+$('#resWatch').onclick = () => { $('#resDlg').close(); exitTest(); enterTest(false); };
+$('#resNext').onclick = () => { $('#resDlg').close(); startLevel(S.li + 1); };
+
+// ---------- рисование ----------
+function label(t, x, y, col, size = 15, align = 'center', w = 400) {
+  ctx.save(); ctx.translate(x, y); ctx.transform(1, 0, -0.26, 1, 0, 0);
+  ctx.font = `${w} ${size}px 'PT Sans Narrow', 'Arial Narrow', sans-serif`; ctx.fillStyle = col; ctx.textAlign = align; ctx.textBaseline = 'middle';
+  ctx.fillText(t, 0, 0); ctx.restore();
+}
+function drawSheet(gOff) {
+  const { w, h } = S.view;
+  ctx.fillStyle = theme.sheet; ctx.fillRect(0, 0, w, h);
+  ctx.lineWidth = 1;
+  const xA = Math.floor(wx(0)), xB = Math.ceil(wx(w)), yA = Math.floor(wy(h)), yB = Math.ceil(wy(0));
+  for (let x = xA; x <= xB; x += 0.5) { ctx.strokeStyle = Math.abs(x - Math.round(x)) < 1e-6 ? theme.gridMajor : theme.grid; ctx.beginPath(); ctx.moveTo(Math.round(sx(x)) + .5, 0); ctx.lineTo(Math.round(sx(x)) + .5, h); ctx.stroke(); }
+  for (let y = Math.max(0, yA); y <= yB; y += 0.5) { ctx.strokeStyle = Math.abs(y - Math.round(y)) < 1e-6 ? theme.gridMajor : theme.grid; ctx.beginPath(); ctx.moveTo(0, Math.round(sy(y)) + .5); ctx.lineTo(w, Math.round(sy(y)) + .5); ctx.stroke(); }
+  // грунт (сдвигается при толчках)
+  const gy = sy(0), gb = S.view.graphY - 8;
+  ctx.fillStyle = theme.soil; ctx.globalAlpha = 0.35; ctx.fillRect(0, gy, w, gb - gy); ctx.globalAlpha = 1;
+  ctx.save(); ctx.beginPath(); ctx.rect(0, gy, w, gb - gy); ctx.clip();
+  ctx.strokeStyle = theme.ground; ctx.globalAlpha = 0.5; ctx.beginPath();
+  const off = (gOff * S.view.s) % 10;
+  for (let d = -h; d < w + h; d += 10) { ctx.moveTo(d + off, gb); ctx.lineTo(d + off + (gb - gy), gy); }
+  ctx.stroke(); ctx.restore(); ctx.globalAlpha = 1;
+  ctx.strokeStyle = theme.ink; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(w, gy); ctx.stroke();
+  // этажи-подписи
+  ctx.strokeStyle = theme.ink; ctx.lineWidth = 1; ctx.strokeRect(5.5, 5.5, w - 11, h - 11); ctx.lineWidth = 2.5; ctx.strokeRect(12, 12, w - 24, h - 24);
+}
+function beam(x1, y1, x2, y2, mat, color, alpha = 1) {
+  const m = MATERIALS[mat], wpx = Math.max(mat === 'cable' ? 2 : 4, m.thick * S.view.s);
+  ctx.globalAlpha = alpha; ctx.lineCap = mat === 'floor' ? 'butt' : 'round'; ctx.strokeStyle = color || matColor(mat); ctx.lineWidth = wpx;
+  ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); ctx.globalAlpha = 1;
+}
+function nodeMark(x, y, rigid, col) {
+  const r = Math.max(4, S.view.s * 0.1);
+  ctx.fillStyle = rigid ? (col || theme.ink) : theme.sheet; ctx.strokeStyle = col || theme.ink; ctx.lineWidth = 2;
+  if (rigid) { ctx.fillRect(x - r, y - r, 2 * r, 2 * r); ctx.strokeRect(x - r, y - r, 2 * r, 2 * r); }
+  else { ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fill(); ctx.stroke(); }
+}
+function anchorMark(x, y, rigid, iso) {
+  const r = Math.max(9, S.view.s * 0.28);
+  ctx.strokeStyle = theme.ink; ctx.fillStyle = theme.sheet; ctx.lineWidth = 2;
+  if (iso) {
+    const r2 = Math.max(13, S.view.s * 0.45); ctx.fillStyle = '#2B2B2B'; ctx.beginPath(); ctx.roundRect ? ctx.roundRect(x - r2, y + 1, 2 * r2, r2 * 0.9, 5) : ctx.rect(x - r2, y + 1, 2 * r2, r2 * 0.9); ctx.fill();
+    ctx.strokeStyle = theme.sheet; ctx.lineWidth = 1; for (let i = 1; i < 4; i++) { ctx.beginPath(); ctx.moveTo(x - r2 + 3, y + 1 + i * r2 * 0.22); ctx.lineTo(x + r2 - 3, y + 1 + i * r2 * 0.22); ctx.stroke(); }
+    return;
+  }
+  if (rigid) { ctx.fillStyle = theme.ink; ctx.fillRect(x - r, y, 2 * r, 6); for (let i = -r; i < r; i += 5) { ctx.beginPath(); ctx.moveTo(x + i, y + 12); ctx.lineTo(x + i + 5, y + 6); ctx.stroke(); } return; }
+  ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x - r * .75, y + r); ctx.lineTo(x + r * .75, y + r); ctx.closePath(); ctx.fill(); ctx.stroke();
+}
+function drawDesign() {
+  const D = S.design, rig = new Set(D.rigid || []);
+  const hovEl = S.tool === 'del' && S.hover ? elementAt(S.hover.x, S.hover.y) : null;
+  const els = D.elements.slice().sort((a, b) => (a.mat === 'floor') - (b.mat === 'floor'));
+  for (const e of els) { const a = nodeById(e.a), b = nodeById(e.b); beam(sx(a.x), sy(a.y), sx(b.x), sy(b.y), e.mat, e === hovEl ? theme.danger : null); }
+  for (const n of D.nodes) if (n.anchor) anchorMark(sx(n.x), sy(n.y), rig.has(n.id), !!D.iso); else nodeMark(sx(n.x), sy(n.y), rig.has(n.id));
+  if (D.tmd) drawTmd(nodeById(D.tmd.node), D.tmd.L, null);
+  if (S.tool === 'rigid' && S.hover) { const n = nodeAt(S.hover.x, S.hover.y, 0.4); if (n) { ctx.strokeStyle = theme.tension; ctx.lineWidth = 2.5; ctx.strokeRect(sx(n.x) - 11, sy(n.y) - 11, 22, 22); } }
+  if (S.tool === 'tmd' && S.hover) { const n = nodeAt(S.hover.x, S.hover.y, 0.5); if (n && !n.anchor) { ctx.globalAlpha = 0.5; drawTmd(n, S.tmdL, null); ctx.globalAlpha = 1; } }
+  if (S.tool === 'build' && S.hover && S.mat) {
+    const p = S.hover, ok = validPoint(p);
+    if (S.start) {
+      const len = Math.hypot(p.x - S.start.x, p.y - S.start.y), good = ok && len <= (MATERIALS[S.mat].maxLen || MAX_LEN) + 1e-6;
+      beam(sx(S.start.x), sy(S.start.y), sx(p.x), sy(p.y), S.mat, good ? null : theme.danger, 0.55);
+      if (len > 0.05) label(`${fmt(len)} м`, (sx(S.start.x) + sx(p.x)) / 2 + 14, (sy(S.start.y) + sy(p.y)) / 2 - 14, good ? theme.ink : theme.danger, 16, 'left');
+    }
+    ctx.strokeStyle = ok ? theme.tension : theme.danger; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(sx(p.x), sy(p.y), Math.max(7, S.view.s * 0.14), 0, 7); ctx.stroke();
+  }
+  // подписи этажей
+  const fl = floorTops(D);
+  fl.forEach((y, i) => label(`${i + 1} этаж`, sx(level().view.x0) + 30, sy(y) - 10, theme.inkSoft, 14, 'left'));
+}
+function drawTmd(n, L, P) {
+  const x = P ? P.hx : sx(n.x), y = P ? P.hy : sy(n.y), mx = P ? P.mx : x, my = P ? P.my : y + Math.max(L, 1.6) * S.view.s;
+  ctx.strokeStyle = theme.ink; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(mx, my); ctx.stroke();
+  const r = Math.max(8, S.view.s * 0.32);
+  ctx.fillStyle = theme.compress; ctx.beginPath(); ctx.arc(mx, my, r, 0, 7); ctx.fill(); ctx.strokeStyle = theme.ink; ctx.stroke();
+  label('6 т', mx + r + 4, my, theme.ink, 13, 'left');
+}
+function mix(c1, c2, t) { const p = c => { c = c.replace('#', ''); return [0, 2, 4].map(i => parseInt(c.substr(i, 2), 16)); }; const a = p(c1), b = p(c2); return `rgb(${a.map((v, i) => Math.round(v + (b[i] - v) * t)).join(',')})`; }
+function drawWorld() {
+  const T = S.test, W = T.W, P = W.P, g = W.gx(T.t);
+  const ex = (T.firstBreak || T.collapsed) ? 1 : S.exag;
+  // всё рисуем относительно исходного положения; смещения увеличены в ex раз
+  const X = i => sx(P.x0[i] + (P.x[i] - P.x0[i]) * ex), Y = i => sy(P.y0[i] + (P.y[i] - P.y0[i]) * ex);
+  ctx.strokeStyle = theme.inkSoft; ctx.lineWidth = 1.2; ctx.setLineDash([5, 5]);
+  for (const el of W.els) { const a = el.ids[0], b = el.ids[el.ids.length - 1]; ctx.beginPath(); ctx.moveTo(sx(P.x0[a]), sy(P.y0[a])); ctx.lineTo(sx(P.x0[b]), sy(P.y0[b])); ctx.stroke(); }
+  ctx.setLineDash([]);
+  const pulse = 0.55 + 0.45 * Math.sin(performance.now() / 70);
+  const order = W.els.slice().sort((a, b) => (a.src.mat === 'floor') - (b.src.mat === 'floor'));
+  for (const el of order) {
+    const base = matColor(el.src.mat), m = el.mat, wpx = Math.max(m.tensionOnly ? 2.5 : 4, m.thick * S.view.s);
+    for (const c of el.dist) {
+      if (!c.alive) continue;
+      const x1 = X(c.i), y1 = Y(c.i), x2 = X(c.j), y2 = Y(c.j);
+      let col = base;
+      if (!el.broken && !el.immortal) col = mix(base, c.T >= 0 ? theme.tension : theme.compress, Math.min(1, Math.max(c.ra * 1.3, Math.min(0.6, Math.abs(c.T) / (m.tensionOnly ? 3e4 : 1.2e5)))));
+      const tot = c.ra + c.rb;
+      ctx.globalAlpha = !el.broken && !el.immortal && tot > 0.85 ? pulse : el.broken ? 0.6 : 1;
+      ctx.lineCap = el.src.mat === 'floor' ? 'butt' : 'round'; ctx.strokeStyle = col; ctx.lineWidth = wpx;
+      ctx.beginPath(); ctx.moveTo(x1, y1);
+      if (m.tensionOnly && c.T <= 0) ctx.quadraticCurveTo((x1 + x2) / 2 + 6, (y1 + y2) / 2 + 6, x2, y2); else ctx.lineTo(x2, y2);
+      ctx.stroke();
+      if (!el.broken && !el.immortal && c.rb > 0.05) {
+        const len = Math.hypot(x2 - x1, y2 - y1) || 1, nx = (y2 - y1) / len, ny = -(x2 - x1) / len, side = c.Ms > 0 ? 1 : -1, off = wpx / 2 + 1.5;
+        ctx.lineCap = 'butt'; ctx.lineWidth = 3; ctx.globalAlpha = Math.min(1, 0.3 + c.rb * 1.4);
+        ctx.strokeStyle = theme.compress; ctx.beginPath(); ctx.moveTo(x1 + nx * off * side, y1 + ny * off * side); ctx.lineTo(x2 + nx * off * side, y2 + ny * off * side); ctx.stroke();
+        ctx.strokeStyle = theme.tension; ctx.beginPath(); ctx.moveTo(x1 - nx * off * side, y1 - ny * off * side); ctx.lineTo(x2 - nx * off * side, y2 - ny * off * side); ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
+    }
+  }
+  const rig = new Set(S.design.rigid || []);
+  for (const n of S.design.nodes) {
+    // индексы частиц узлов совпадают с порядком nodes
+    const i = S.design.nodes.indexOf(n);
+    if (n.anchor) anchorMark(X(i), Y(i), rig.has(n.id), !!S.design.iso); else nodeMark(X(i), Y(i), rig.has(n.id));
+  }
+  if (W.tmd) {
+    // маятник рисуем подлиннее, а угол — по-настоящему (с тем же увеличением)
+    const hx = X(W.tmd.host), hy = Y(W.tmd.host), dx = P.x[W.tmd.i] - P.x[W.tmd.host];
+    const ang = Math.max(-1.1, Math.min(1.1, Math.atan2(dx * ex, W.tmd.L))), Lv = Math.max(W.tmd.L, 1.6) * S.view.s;
+    drawTmd(null, 0, { hx, hy, mx: hx + Lv * Math.sin(ang), my: hy + Lv * Math.cos(ang) });
+  }
+  if (T.firstBreak) { const b = T.firstBreak.brokenAt, r = 18 + 6 * Math.sin(performance.now() / 150); ctx.strokeStyle = theme.danger; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(sx(b.x), sy(b.y), r, 0, 7); ctx.stroke(); }
+  drawGraph(T);
+  return g * ex;
+}
+function drawGraph(T) {
+  const { w } = S.view, y0 = S.view.graphY, h = 96, x0 = 24, gw = w - 48;
+  ctx.fillStyle = theme.sheet; ctx.fillRect(x0, y0, gw, h);
+  ctx.strokeStyle = theme.ink; ctx.lineWidth = 1.5; ctx.strokeRect(x0, y0, gw, h);
+  ctx.strokeStyle = theme.gridMajor; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(x0, y0 + h / 2); ctx.lineTo(x0 + gw, y0 + h / 2); ctx.stroke();
+  const tr = T.trace, span = 13; if (!tr.length) return;
+  let mx = 0.01; for (const p of tr) mx = Math.max(mx, Math.abs(p[1]), Math.abs(p[2]));
+  const px = t => x0 + (t / span) * gw, py = v => y0 + h / 2 - v / mx * (h / 2 - 8);
+  for (const [k, col, wd] of [[1, theme.inkSoft, 1.5], [2, theme.tension, 2.2]]) {
+    ctx.strokeStyle = col; ctx.lineWidth = wd; ctx.beginPath();
+    tr.forEach((p, i) => { const X = px(Math.min(p[0], span)), Y = py(p[k]); i ? ctx.lineTo(X, Y) : ctx.moveTo(X, Y); }); ctx.stroke();
+  }
+  label('земля', x0 + 8, y0 + 12, theme.inkSoft, 13, 'left');
+  label(T.push ? 'крыша после толчка' : 'качание крыши', x0 + 60, y0 + 12, theme.tension, 13, 'left', 700);
+  label(`сейсмограф · ±${fmt(mx * 100, 1)} см`, x0 + gw - 8, y0 + 12, theme.inkSoft, 13, 'right');
+}
+function frame() {
+  if (S.view) {
+    if (S.mode === 'test') advance();
+    ctx.clearRect(0, 0, S.view.w, S.view.h);
+    const off = S.mode === 'test' && S.test ? S.test.W.gx(S.test.t) * ((S.test.firstBreak || S.test.collapsed) ? 1 : S.exag) : 0;
+    drawSheet(off);
+    if (S.mode === 'build') { drawDesign(); drawGraphPlaceholder(); } else if (S.test) drawWorld();
+  }
+  requestAnimationFrame(frame);
+}
+function drawGraphPlaceholder() {
+  const { w } = S.view, y0 = S.view.graphY, x0 = 24, gw = w - 48;
+  ctx.strokeStyle = theme.gridMajor; ctx.setLineDash([5, 5]); ctx.lineWidth = 1.2; ctx.strokeRect(x0, y0, gw, 96); ctx.setLineDash([]);
+  label('Здесь появится сейсмограф: как качаются земля и крыша', w / 2, y0 + 48, theme.inkSoft, 15);
+}
+
+// ---------- диалоги ----------
+const ILL = {
+  1: `<svg class="ill" width="300" height="120" viewBox="0 0 300 120" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M10 105 H290" stroke-width="2"/><path d="M40 105 L60 30 H120 L100 105" /><path d="M58 30 H122" stroke-width="7"/><text x="80" y="20" font-size="14" fill="currentColor" stroke="none" text-anchor="middle">складывается</text><path d="M180 105 V30 H260 V105 M180 105 L260 30" /><path d="M178 30 H262" stroke-width="7"/><text x="220" y="20" font-size="14" fill="currentColor" stroke="none" text-anchor="middle">держит</text></svg>`,
+  2: `<svg class="ill" width="240" height="130" viewBox="0 0 240 130" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M10 120 H230" stroke-width="2"/><path d="M50 120 Q45 80 55 65 M190 120 Q185 80 195 65 M55 65 Q50 35 60 20 M195 65 Q190 35 200 20"/><path d="M53 65 H197 M58 20 H202" stroke-width="7"/><rect x="47" y="58" width="12" height="12" fill="currentColor"/><rect x="189" y="58" width="12" height="12" fill="currentColor"/><rect x="52" y="13" width="12" height="12" fill="currentColor"/><rect x="194" y="13" width="12" height="12" fill="currentColor"/></svg>`,
+  3: `<svg class="ill" width="240" height="130" viewBox="0 0 240 130" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M10 120 H230" stroke-width="2"/><path d="M60 120 V20 M180 120 V20"/><path d="M58 20 H182" stroke-width="7"/><path d="M60 120 L180 20" stroke="#2A62C9" stroke-width="2.5"/><path d="M180 120 Q130 80 60 20" stroke-dasharray="4 4" stroke-width="1.6"/><text x="200" y="70" font-size="13" fill="currentColor" stroke="none">тянет</text></svg>`,
+  4: `<svg class="ill" width="260" height="140" viewBox="0 0 260 140" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M10 130 H250" stroke-width="2"/><path d="M60 130 Q55 70 70 10 M120 130 Q115 70 130 10"/><path d="M60 100 H118 M57 70 H117 M60 40 H123 M68 12 H128" stroke-width="5"/><path d="M160 60 q10 -20 20 0 t20 0 t20 0 t20 0" /><text x="160" y="90" font-size="13" fill="currentColor" stroke="none">в такт — опасно</text></svg>`,
+  5: `<svg class="ill" width="200" height="150" viewBox="0 0 200 150" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M10 145 H190" stroke-width="2"/><path d="M80 145 V10 M120 145 V10"/><path d="M78 10 H122 M78 40 H122 M78 70 H122 M78 100 H122" stroke-width="4"/><path d="M100 10 L112 32"/><circle cx="114" cy="36" r="7" fill="#C0392B"/></svg>`,
+  6: `<svg class="ill" width="260" height="130" viewBox="0 0 260 130" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M10 120 H250" stroke-width="2"/><rect x="60" y="30" width="140" height="70" /><path d="M60 65 H200 M107 30 V100 M153 30 V100"/><rect x="55" y="102" width="20" height="10" rx="3" fill="#2B2B2B"/><rect x="120" y="102" width="20" height="10" rx="3" fill="#2B2B2B"/><rect x="185" y="102" width="20" height="10" rx="3" fill="#2B2B2B"/></svg>`,
+};
+function openIntro() {
+  const L = level();
+  $('#inTitle').textContent = `${L.id}. ${L.title}`; $('#inIll').innerHTML = ILL[L.id] || '';
+  $('#inIdea').textContent = L.idea;
+  $('#inTask').innerHTML = `<b>Задание.</b> ${L.task}${L.sandbox ? '' : ` Бюджет — ${L.budget} ₽.`}`;
+  $('#inTip').textContent = 'Подсказка: ' + L.tip;
+  $('#introDlg').showModal();
+}
+$('#inGo').onclick = () => $('#introDlg').close();
+$('#helpBtn').onclick = openIntro;
+$('#lvlBtn').onclick = () => {
+  const box = $('#lvlList'); box.innerHTML = '';
+  LEVELS.forEach((L, i) => {
+    const b = document.createElement('button');
+    b.innerHTML = `<span>${L.id}. ${L.title}</span><span class="s">${L.sandbox ? '' : starsHTML(S.progress.stars[L.id])}</span>`;
+    if (i === S.li) b.setAttribute('aria-pressed', 'true');
+    b.onclick = () => { $('#lvlDlg').close(); startLevel(i); };
+    box.appendChild(b);
+  });
+  $('#lvlDlg').showModal();
+};
+$('#lvlClose').onclick = () => $('#lvlDlg').close();
+
+load();
+startLevel(0, true);
+if (document.fonts) document.fonts.ready.then(resize);
+new ResizeObserver(resize).observe($('#stage'));
+requestAnimationFrame(frame);
+
+</script>
+</body>
+</html>
